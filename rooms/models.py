@@ -8,6 +8,7 @@ class Room(CoreModel):
     address = models.CharField(max_length=140)
     price = models.IntegerField(help_text="USD per night")
     beds = models.IntegerField(default=1)
+    # lat, lng은 좌표로, 구글링에 유용함
     lat = models.DecimalField(max_digits=10, decimal_places=6)
     lng = models.DecimalField(max_digits=10, decimal_places=6)
     bedrooms = models.IntegerField(default=1)

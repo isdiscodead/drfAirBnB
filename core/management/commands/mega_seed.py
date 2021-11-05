@@ -6,6 +6,7 @@ from users.models import User
 from rooms.models import Room, Photo
 
 
+# 20명의 user, 룸 등을 자동으로 생성
 class Command(BaseCommand):
 
     help = "It seeds the DB with tons of stuff"
