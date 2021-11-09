@@ -36,6 +36,7 @@ class ListRoomsView(ListAPIView):
     serializer_class = RoomSerializer
 
 
+# RetireveAPIView -> 하나만 가져오기 특화!
 class SeeRoomView(RetrieveAPIView):
     # queryset은 list지만, url을 통해 자동으로 일치하는 pk의 데이터 가져옴
     queryset = Room.objects.all()
