@@ -40,5 +40,5 @@ class ListRoomsView(ListAPIView):
 class SeeRoomView(RetrieveAPIView):
     # queryset은 list지만, url을 통해 자동으로 일치하는 pk의 데이터 가져옴
     queryset = Room.objects.all()
-    serializer_class = BigRoomSerializer
+    serializer_class = RoomSerializer
     lookup_url_kwarg = "pk"

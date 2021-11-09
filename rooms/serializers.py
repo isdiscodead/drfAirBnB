@@ -17,12 +17,12 @@ class RoomSerializer(serializers.ModelSerializer):
 
     class Meta:
         model = Room
-        fields = ("pk", "name", "price", "instant_book", "bedrooms", "user")
+        exclude = ("modified",)
 
 
-class BigRoomSerializer(serializers.ModelSerializer):
-
-    class Meta:
-        model = Room
-        # exclude = ()와 동일한 코드
-        fields = '__all__'
+# class BigRoomSerializer(serializers.ModelSerializer):
+#
+#     class Meta:
+#         model = Room
+#         # exclude = ()와 동일한 코드
+#         fields = '__all__'

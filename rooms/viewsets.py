@@ -5,4 +5,4 @@ from .serializers import *
 
 class RoomViewset(viewsets.ModelViewSet):
     queryset = Room.objects.all()
-    serializer_class = BigRoomSerializer
+    serializer_class = RoomSerializer
