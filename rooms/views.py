@@ -15,7 +15,7 @@ def list_rooms(request):
     return Response(data=serialized_rooms.data)
 
 
-# class based view
+# class based view ( 기본 )
 class ListRoomView(APIView):
 
     # 이런 방법으로 간단하게 유저 인증 여부, 권한 여부 확인 가능
