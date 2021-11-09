@@ -1,9 +1,9 @@
 from rest_framework.decorators import api_view
 from rest_framework.views import APIView
-from rest_framework.generics import ListAPIView
+from rest_framework.generics import ListAPIView, RetrieveAPIView
 from rest_framework.response import Response
 from .models import Room
-from .serializers import RoomSerializer
+from .serializers import *
 
 
 # function based view
@@ -34,3 +34,10 @@ class ListRoomView(APIView):
 class ListRoomsView(ListAPIView):
     queryset = Room.objects.all()
     serializer_class = RoomSerializer
+
+
+class SeeRoomView(RetrieveAPIView):
+    # queryset은 list지만, url을 통해 자동으로 일치하는 pk의 데이터 가져옴
+    queryset = Room.objects.all()
+    serializer_class = BigRoomSerializer
+    lookup_url_kwarg = "pk"
