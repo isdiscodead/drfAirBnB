@@ -1,3 +1,4 @@
+from rest_framework import status
 from rest_framework.decorators import api_view
 from rest_framework.views import APIView
 from rest_framework.generics import ListAPIView, RetrieveAPIView
@@ -7,12 +8,20 @@ from .serializers import *
 
 
 # function based view
-@api_view(["GET", "DELETE"])   # decorator를 function base view 위에 명시!
-def list_rooms(request):
-    rooms = Room.objects.all()
-    # return Response -> 기본 제공 response page, 시각적으로 api 상호작용 가능
-    serialized_rooms = RoomSerializer(rooms, many=True) # many 옵션으로 list
-    return Response(data=serialized_rooms.data)
+@api_view(["GET", "POST"])
+def rooms_view(request):
+    if request.method == "GET":
+        rooms = Room.objects.all()
+        serializer = RoomSerializer(rooms, many=True).data
+        return Response(serializer)
+    elif request.method == "POST":
+        # django post로 받은 json data를 python dictionary로 변환함
+        # 따라서 drf view가 필요한 것!
+        serializer = WriteRoomSerializer(data=request.data)
+        if serializer.is_valid(): # -> 필요한 게 없다면 false
+            return Response(status=status.HTTP_200_OK)
+        else:
+            return Response(status=status.HTTP_400_BAD_REQUEST)
 
 
 # class based view ( 기본 )
@@ -31,6 +40,7 @@ class ListRoomView(APIView):
         pass
 
 
+# Generic View
 class ListRoomsView(ListAPIView):
     queryset = Room.objects.all()
     serializer_class = RoomSerializer
@@ -42,3 +52,5 @@ class SeeRoomView(RetrieveAPIView):
     queryset = Room.objects.all()
     serializer_class = RoomSerializer
     lookup_url_kwarg = "pk"
+
+
