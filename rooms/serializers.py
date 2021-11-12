@@ -38,6 +38,21 @@ class WriteRoomSerializer(serializers.Serializer):
         # create()는 반드시 create() 호출을 반환해야 함
         return Room.objects.create(**validated_data)    # **으로 데이터 언패킹
 
+    # validate_ 되어 있으면 자동으로 호출됨
+    def validate_beds(self, beds):
+        if beds < 4:
+            raise serializers.ValidationError("Your house is too small")
+        else:
+            return beds
+
+    def validate(self, data):
+        check_in = data.get('check_in')
+        check_out = data.get('check_out')
+        if check_in == check_out:
+            raise serializers.ValidationError("Not enough time between changes")
+        else:
+            return data
+
 
 # class BigRoomSerializer(serializers.ModelSerializer):
 #

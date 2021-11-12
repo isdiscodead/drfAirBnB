@@ -30,7 +30,7 @@ def rooms_view(request):
             room_serializer = ReadRoomSerializer(room).data
             return Response(data=room_serializer, status=status.HTTP_200_OK)
         else:
-            return Response(status=status.HTTP_400_BAD_REQUEST)
+            return Response(data=serializer.errors, status=status.HTTP_400_BAD_REQUEST)
 
 
 # class based view ( 기본 )
