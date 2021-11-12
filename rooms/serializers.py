@@ -4,7 +4,7 @@ from rooms.models import Room
 from users.serializers import TinyUserSerializer
 
 
-class RoomSerializer(serializers.ModelSerializer):
+class ReadRoomSerializer(serializers.ModelSerializer):
     # Room model에 있는 field 가져오기
 
     # name = serializers.CharField(max_length=140)
@@ -21,6 +21,7 @@ class RoomSerializer(serializers.ModelSerializer):
 
 
 class WriteRoomSerializer(serializers.Serializer):
+    # models와 동일, models 대신 serializers 사용
     name = serializers.CharField(max_length=140)
     address = serializers.CharField(max_length=140)
     price = serializers.IntegerField(help_text="USD per night")
@@ -32,6 +33,10 @@ class WriteRoomSerializer(serializers.Serializer):
     check_in = serializers.TimeField(default="00:00:00")
     check_out = serializers.TimeField(default="00:00:00")
     instant_book = serializers.BooleanField(default=False)
+
+    def create(self, validated_data):
+        # create()는 반드시 create() 호출을 반환해야 함
+        return Room.objects.create(**validated_data)    # **으로 데이터 언패킹
 
 
 # class BigRoomSerializer(serializers.ModelSerializer):
