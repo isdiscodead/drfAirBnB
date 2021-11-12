@@ -34,10 +34,6 @@ class WriteRoomSerializer(serializers.Serializer):
     check_out = serializers.TimeField(default="00:00:00")
     instant_book = serializers.BooleanField(default=False)
 
-    def create(self, validated_data):
-        # create()는 반드시 create() 호출을 반환해야 함
-        return Room.objects.create(**validated_data)    # **으로 데이터 언패킹
-
     # validate_ 되어 있으면 자동으로 호출됨
     def validate_beds(self, beds):
         if beds < 4:
@@ -46,13 +42,20 @@ class WriteRoomSerializer(serializers.Serializer):
             return beds
 
     def validate(self, data):
-        check_in = data.get('check_in')
-        check_out = data.get('check_out')
-        if check_in == check_out:
-            raise serializers.ValidationError("Not enough time between changes")
-        else:
-            return data
+        # instance 객체가 있다면 update, 없다면 create임!
+        if not self.instance:
+            check_in = data.get("check_in")
+            check_out = data.get("check_out")
+            if check_in == check_out:
+                raise serializers.ValidationError("Not enough time between change.")
+        return data
 
+    def create(self, validated_data):
+        # create()는 반드시 create() 호출을 반환해야 함
+        return Room.objects.create(**validated_data)    # **으로 데이터 언패킹
+
+    def update(self, instance, validated_data): # instance가 존재하기 때문에 save()에서 구분 가
+        pass
 
 # class BigRoomSerializer(serializers.ModelSerializer):
 #
