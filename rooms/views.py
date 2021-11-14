@@ -51,11 +51,14 @@ class RoomView(APIView):
                 return Response(status=status.HTTP_403_FORBIDDEN)
             # partial=True 옵션으로 수정하고자 하는 데이터만 보낼 수 있게 된다
             serializer = WriteRoomSerializer(room, data=request.data, partial=True)
+
             if serializer.is_valid():
                 serializer.save()
+                return Response(ReadRoomSerializer(room).data)
             else:
                 return Response(serializer.errors, status.HTTP_400_BAD_REQUEST)
             return Response()
+
         else:
             return Response(status=status.HTTP_404_NOT_FOUND)
 

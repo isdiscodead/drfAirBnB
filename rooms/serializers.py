@@ -43,19 +43,39 @@ class WriteRoomSerializer(serializers.Serializer):
 
     def validate(self, data):
         # instance 객체가 있다면 update, 없다면 create임!
-        if not self.instance:
+        if self.instance:
+            check_in = data.get("chech_in", self.instance.check_in)
+            check_out = data.get("chech_out", self.instance.check_out)
+        else:
             check_in = data.get("check_in")
             check_out = data.get("check_out")
-            if check_in == check_out:
-                raise serializers.ValidationError("Not enough time between change.")
+
+        if check_in == check_out:
+            raise serializers.ValidationError("Not enough time between change.")
+
         return data
 
     def create(self, validated_data):
         # create()는 반드시 create() 호출을 반환해야 함
         return Room.objects.create(**validated_data)    # **으로 데이터 언패킹
 
-    def update(self, instance, validated_data): # instance가 존재하기 때문에 save()에서 구분 가
-        pass
+    def update(self, instance, validated_data):
+        # instance가 존재하기 때문에 save()에서 구분 가능
+        # data를 get하되, default 값으로 이전에 존재하던 값 넣어주기
+        instance.name = validated_data.get("name", instance.name)
+        instance.address = validated_data.get("address", instance.address)
+        instance.price = validated_data.get("price", instance.price)
+        instance.beds = validated_data.get("beds", instance.beds)
+        instance.lat = validated_data.get("lat", instance.lat)
+        instance.lng = validated_data.get("lng", instance.lng)
+        instance.bedrooms = validated_data.get("bedrooms", instance.bedrooms)
+        instance.bathrooms = validated_data.get("bathrooms", instance.bathrooms)
+        instance.check_in = validated_data.get("check_in", instance.check_in)
+        instance.check_out = validated_data.get("check_out", instance.check_out)
+        instance.instant_book = validated_data.get("instant_book", instance.instant_book)
+
+        instance.save()
+        return instance
 
 # class BigRoomSerializer(serializers.ModelSerializer):
 #
