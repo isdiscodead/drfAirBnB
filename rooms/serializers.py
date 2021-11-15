@@ -1,7 +1,7 @@
 from rest_framework import serializers
 
 from rooms.models import Room
-from users.serializers import TinyUserSerializer
+from users.serializers import RelatedUserSerializer
 
 
 class ReadRoomSerializer(serializers.ModelSerializer):
@@ -13,7 +13,7 @@ class ReadRoomSerializer(serializers.ModelSerializer):
     # instant_book = serializers.BooleanField()
 
     # user 객체의 데이터를 보기 좋게, 따로 Serialize !
-    user = TinyUserSerializer()
+    user = RelatedUserSerializer()
 
     class Meta:
         model = Room
