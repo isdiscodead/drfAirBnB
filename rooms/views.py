@@ -9,19 +9,19 @@ class RoomsView(APIView):
 
     def get(self, request):
         rooms = Room.objects.all()[:5]  # 5개만 가져오기
-        serializer = ReadRoomSerializer(rooms, many=True).data
+        serializer = RoomSerializer(rooms, many=True).data
         return Response(serializer)
 
     def post(self, request):
         if not request.user.is_authenticated:  # POST 요청을 보내기 위해서는 user 필요
             return Response(status=status.HTTP_401_UNAUTHORIZED)
 
-        serializer = WriteRoomSerializer(data=request.data)
+        serializer = RoomSerializer(data=request.data)
         print(dir(serializer))
 
         if serializer.is_valid():  # -> 필요한 게 없다면 false
             room = serializer.save(user=request.user)  # save() 메소드 호출 -> create or update
-            room_serializer = ReadRoomSerializer(room).data
+            room_serializer = RoomSerializer(room).data
             return Response(data=room_serializer, status=status.HTTP_200_OK)
         else:
             return Response(data=serializer.errors, status=status.HTTP_400_BAD_REQUEST)
@@ -39,7 +39,7 @@ class RoomView(APIView):
     def get(self, request, pk):
         room = self.get_room(pk)
         if room is not None:
-            serializer = ReadRoomSerializer(room).data
+            serializer = RoomSerializer(room).data
             return Response(data=serializer)
         else:
             return Response(status=status.HTTP_404_NOT_FOUND)

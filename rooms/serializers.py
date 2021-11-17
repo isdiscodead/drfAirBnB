@@ -4,23 +4,14 @@ from rooms.models import Room
 from users.serializers import RelatedUserSerializer
 
 
-class ReadRoomSerializer(serializers.ModelSerializer):
-    # Room model에 있는 field 가져오기
-    # name = serializers.CharField(max_length=140) ...
+class RoomSerializer(serializers.ModelSerializer):
 
-    # user 객체의 데이터를 보기 좋게, 따로 Serialize ! ( Nested )
     user = RelatedUserSerializer()
 
     class Meta:
         model = Room
-        exclude = ("modified",)
-
-
-class WriteRoomSerializer(serializers.ModelSerializer):
-
-    class Meta:
-        model = Room
-        exclude = ("user", "modified", "created")
+        exclude = ("modified", "created")
+        read_only_fields = ('user', 'id', 'created', 'updated')
 
     # validate_ 되어 있으면 자동으로 호출됨
     def validate_beds(self, beds):
