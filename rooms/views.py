@@ -28,7 +28,6 @@ class RoomsView(APIView):
 
 
 class RoomView(APIView):
-
     def get_room(self, pk):
         try:
             room = Room.objects.get(pk=pk)
