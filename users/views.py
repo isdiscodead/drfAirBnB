@@ -1,3 +1,4 @@
+from django.contrib.auth import authenticate
 from rest_framework import status
 from rest_framework.decorators import api_view, permission_classes
 from rest_framework.response import Response
@@ -9,6 +10,9 @@ from rooms.serializers import RoomSerializer
 from users.models import User
 from users.serializers import UserSerializer
 
+import jwt
+from django.conf import settings
+
 
 class UsersView(APIView):
     def post(self, request):
@@ -19,6 +23,21 @@ class UsersView(APIView):
         else:
             return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
 
+
+@api_view(["POST"])
+def login(request):
+    username = request.data.get("username")
+    password = request.data.get("password")
+
+    if not username or not password:
+        return Response(status=status.HTTP_400_BAD_REQUEST)
+    else:
+        user = authenticate(username=username, password=password)
+        if user is not None:
+            encoded_jwt = jwt.encode({'id': user.pk}, 'settings.SECRET_KEY', algorithm='HS256')
+            return Response(data={"token": encoded_jwt})
+        else:
+            return Response(status=status.HTTP_401_UNAUTHORIZED)
 
 class MeView(APIView):
 
