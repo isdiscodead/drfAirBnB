@@ -34,10 +34,11 @@ def login(request):
     else:
         user = authenticate(username=username, password=password)
         if user is not None:
-            encoded_jwt = jwt.encode({'id': user.pk}, 'settings.SECRET_KEY', algorithm='HS256')
+            encoded_jwt = jwt.encode({'pk': user.pk}, 'settings.SECRET_KEY', algorithm='HS256')
             return Response(data={"token": encoded_jwt})
         else:
             return Response(status=status.HTTP_401_UNAUTHORIZED)
+
 
 class MeView(APIView):
 
