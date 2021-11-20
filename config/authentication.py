@@ -8,6 +8,7 @@ import jwt
 class JWTAuthentication(authentication.BaseAuthentication):
     def authenticate(self, request):
         try:
+            # 모든 헤더나 여러 정보를 META에서 얻어올 수 있음!
             token = request.META.get('HTTP_AUTHORIZATION')
             if token is None:
                 return None
@@ -16,7 +17,7 @@ class JWTAuthentication(authentication.BaseAuthentication):
             decoded = jwt.decode(jwt_token, settings.SECRET_KEY, algorithms='HS256')
             pk = decoded.get("pk")
             user = User.objects.get(pk=pk)
-            return user
+            return (user, None)
         except (ValueError, User.DoeseNotExists):
             return None
 
