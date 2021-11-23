@@ -4,6 +4,7 @@ from rest_framework import permissions
 from rest_framework.pagination import PageNumberPagination
 from rest_framework.viewsets import ModelViewSet
 
+from .permissions import IsOwner
 from .serializers import *
 
 
@@ -19,6 +20,8 @@ class RoomViewSet(ModelViewSet):
         else:
             permission_classes = [IsOwner]
 
+        # 각각의 permission에 대한 실행 결과 리스트 반환
+        return [permission() for permission in permission_classes]
 
 
 @api_view(["GET"])
