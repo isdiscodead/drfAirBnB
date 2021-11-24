@@ -6,7 +6,7 @@ from users.serializers import RelatedUserSerializer
 
 class RoomSerializer(serializers.ModelSerializer):
 
-    user = RelatedUserSerializer()
+    user = RelatedUserSerializer(read_only=True)
     # method name을 get_필드명으로 안 할 경우 method_name="" 속성 사용
     is_fav = serializers.SerializerMethodField()
 
@@ -44,10 +44,7 @@ class RoomSerializer(serializers.ModelSerializer):
                 return obj in user.favs.all()
         return False
 
-
-# class BigRoomSerializer(serializers.ModelSerializer):
-#
-#     class Meta:
-#         model = Room
-#         # exclude = ()와 동일한 코드
-#         fields = '__all__'
+    def create(self, validated_data):
+        request = self.context.get("request")
+        room = Room.objects.create(**validated_data, user=request.user)
+        return room
