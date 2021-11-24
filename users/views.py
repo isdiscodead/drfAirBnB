@@ -1,63 +1,49 @@
 from django.contrib.auth import authenticate
 from rest_framework import status
-from rest_framework.decorators import api_view, permission_classes
+from rest_framework.decorators import api_view, permission_classes, action
 from rest_framework.response import Response
 from rest_framework.views import APIView
-from rest_framework.permissions import IsAuthenticated
+from rest_framework.permissions import IsAuthenticated, IsAdminUser, AllowAny
+from rest_framework.viewsets import ModelViewSet
 
 from rooms.models import Room
 from rooms.serializers import RoomSerializer
 from users.models import User
 from users.serializers import UserSerializer
+from .permissions import IsSelf
 
 import jwt
-from django.conf import settings
 
 
-class UsersView(APIView):
-    def post(self, request):
-        serializer = UserSerializer(data=request.data)
-        if serializer.is_valid():
-            new_user = serializer.save()
-            return Response(UserSerializer(new_user).data)
+class UserViewSet(ModelViewSet):
+    queryset = User.objects.all()
+    serializer_class = UserSerializer
+
+    def get_permissions(self):
+        permission_classes = []
+        if self.action == "list":
+            permission_classes = [IsAdminUser]
+        elif self.action == "create" or self.action == "retrieve":
+            permission_classes = [AllowAny]
         else:
-            return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+            permission_classes = [IsSelf]
 
+        return [permission() for permission in permission_classes]
 
-@api_view(["POST"])
-def login(request):
-    username = request.data.get("username")
-    password = request.data.get("password")
+    @action(detail=False, methods="POST")
+    def login(self, request):
+        username = request.data.get("username")
+        password = request.data.get("password")
 
-    if not username or not password:
-        return Response(status=status.HTTP_400_BAD_REQUEST)
-    else:
-        user = authenticate(username=username, password=password)
-        if user is not None:
-            encoded_jwt = jwt.encode({'pk': user.pk}, 'settings.SECRET_KEY', algorithm='HS256')
-            return Response(data={"token": encoded_jwt})
+        if not username or not password:
+            return Response(status=status.HTTP_400_BAD_REQUEST)
         else:
-            return Response(status=status.HTTP_401_UNAUTHORIZED)
-
-
-class MeView(APIView):
-
-    # 이 view 전체에 필요한 permission들을 넣는 array
-    # function based view에서 사용하기 위해서는
-    # @api_view decorator와 @permission_classes([]) 사용
-    permission_classes = [IsAuthenticated]
-
-    def get(self, request):
-        if request.user.is_authenticated:
-            return Response(UserSerializer(request.user).data)
-
-    def put(self, request):
-        serializer = UserSerializer(request.user, data=request.data, partial=True)
-        if serializer.is_valid():
-            serializer.save()
-            return Response()
-        else:
-            return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+            user = authenticate(username=username, password=password)
+            if user is not None:
+                encoded_jwt = jwt.encode({'pk': user.pk}, 'settings.SECRET_KEY', algorithm='HS256')
+                return Response(data={"token": encoded_jwt, "id": user.pk})
+            else:
+                return Response(status=status.HTTP_401_UNAUTHORIZED)
 
 
 @api_view(["GET"])
