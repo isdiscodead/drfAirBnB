@@ -5,7 +5,7 @@ from users.serializers import RelatedUserSerializer
 
 
 class RoomSerializer(serializers.ModelSerializer):
-
+    # create 시에 user를 직접 작성할 수 없도록 read_only 속성
     user = RelatedUserSerializer(read_only=True)
     # method name을 get_필드명으로 안 할 경우 method_name="" 속성 사용
     is_fav = serializers.SerializerMethodField()
@@ -45,6 +45,7 @@ class RoomSerializer(serializers.ModelSerializer):
         return False
 
     def create(self, validated_data):
+        # serializer는 자체적으로 context를 받아오고, 이를 통해 request 사용 가능
         request = self.context.get("request")
         room = Room.objects.create(**validated_data, user=request.user)
         return room
