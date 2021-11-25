@@ -147,3 +147,9 @@ REST_FRAMEWORK = {
         "config.authentication.JWTAuthentication",
     ]
 }
+
+if not DEBUG:
+REST_FRAMEWORK["DEFAULT_RENDERER_CLASSES"] = [
+		"rest_framework.renderers.JSONRenderer",
+]
+# JSON으로 반환 -> React가 받아서 프론트에 사용
